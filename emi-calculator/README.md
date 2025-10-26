@@ -2,6 +2,16 @@
 
 A full-stack web application to help you decide whether paying off your loan EMI early (foreclosure) is financially beneficial.
 
+## 🚀 Live Deployment
+
+Want to deploy this app and get a live URL? Check out the **[DEPLOYMENT.md](DEPLOYMENT.md)** guide for step-by-step instructions.
+
+**Quick Deploy Options:**
+- **Render** (Recommended - Free) - 10 minutes setup
+- **Railway** - Fast with free credits
+- **Docker** - For any cloud platform
+- **Vercel** - For frontend-focused deployment
+
 ## Features
 
 - Calculate outstanding loan principal

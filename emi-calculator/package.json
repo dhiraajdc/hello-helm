@@ -1,0 +1,27 @@
+{
+  "name": "emi-calculator-fullstack",
+  "version": "1.0.0",
+  "description": "EMI Foreclosure Calculator - Full Stack Application",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "cd backend && node server.js",
+    "build": "cd frontend && npm install && npm run build",
+    "heroku-postbuild": "cd frontend && npm install && npm run build",
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm start"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "keywords": [
+    "emi",
+    "calculator",
+    "loan",
+    "foreclosure",
+    "react",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT"
+}
