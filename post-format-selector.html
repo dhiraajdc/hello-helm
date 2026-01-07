@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Post Format Selector</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .modal-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .modal-header p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f3f4f6;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #6b7280;
+            font-size: 20px;
+        }
+
+        .close-btn:hover {
+            background: #e5e7eb;
+            color: #1a1a1a;
+            transform: rotate(90deg);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .option-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 0;
+        }
+
+        .option-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .option-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .option-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        .option-card.selected .checkmark {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .option-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s;
+            z-index: 2;
+        }
+
+        .checkmark::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .option-card:hover .icon-wrapper {
+            transform: scale(1.1);
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .video-icon {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+        }
+
+        .image-icon {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        }
+
+        .carousel-icon {
+            background: linear-gradient(135deg, #f7b733 0%, #fc4a1a 100%);
+        }
+
+        .option-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .option-description {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .option-shortcut {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e5e7eb;
+            color: #6b7280;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover .option-shortcut {
+            opacity: 1;
+            background: #d1d5db;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #1a1a1a;
+        }
+
+        .quick-tip {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .quick-tip p {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .quick-tip strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 640px) {
+            .modal {
+                padding: 24px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-header h2 {
+                font-size: 24px;
+            }
+        }
+
+        /* Keyboard focus indicator */
+        .option-card:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        .btn:focus {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <div class="modal">
+            <button class="close-btn" aria-label="Close">×</button>
+
+            <div class="modal-header">
+                <h2>Select Post Format</h2>
+                <p>Choose how you want to share your content</p>
+            </div>
+
+            <div class="options-grid">
+                <div class="option-card" data-format="video" tabindex="0" role="button" aria-pressed="false">
+                    <div class="checkmark"></div>
+                    <div class="option-content">
+                        <div class="icon-wrapper video-icon">
+                            <svg class="icon" fill="white" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                            </svg>
+                        </div>
+                        <div class="option-title">Video</div>
+                        <div class="option-description">Share engaging video content</div>
+                    </div>
+                    <div class="option-shortcut">Press 1</div>
+                </div>
+
+                <div class="option-card" data-format="image" tabindex="0" role="button" aria-pressed="false">
+                    <div class="checkmark"></div>
+                    <div class="option-content">
+                        <div class="icon-wrapper image-icon">
+                            <svg class="icon" fill="white" viewBox="0 0 24 24">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                            </svg>
+                        </div>
+                        <div class="option-title">Image</div>
+                        <div class="option-description">Upload a single photo</div>
+                    </div>
+                    <div class="option-shortcut">Press 2</div>
+                </div>
+
+                <div class="option-card" data-format="carousel" tabindex="0" role="button" aria-pressed="false">
+                    <div class="checkmark"></div>
+                    <div class="option-content">
+                        <div class="icon-wrapper carousel-icon">
+                            <svg class="icon" fill="white" viewBox="0 0 24 24">
+                                <path d="M22 16V4c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2zm-11-4l2.03 2.71L16 11l4 5H8l3-4zM2 6v14c0 1.1.9 2 2 2h14v-2H4V6H2z"/>
+                            </svg>
+                        </div>
+                        <div class="option-title">Carousel</div>
+                        <div class="option-description">Multiple images slideshow</div>
+                    </div>
+                    <div class="option-shortcut">Press 3</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="cancelBtn">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" id="createBtn" disabled>
+                    Create Now
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="quick-tip">
+                <p><strong>Pro tip:</strong> Use keyboard shortcuts 1-3 or click any option to select</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const optionCards = document.querySelectorAll('.option-card');
+        const createBtn = document.getElementById('createBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const closeBtn = document.querySelector('.close-btn');
+        let selectedFormat = null;
+
+        // Handle option selection
+        function selectOption(card) {
+            // Remove selected class from all cards
+            optionCards.forEach(c => {
+                c.classList.remove('selected');
+                c.setAttribute('aria-pressed', 'false');
+            });
+
+            // Add selected class to clicked card
+            card.classList.add('selected');
+            card.setAttribute('aria-pressed', 'true');
+            selectedFormat = card.dataset.format;
+
+            // Enable create button
+            createBtn.disabled = false;
+
+            // Add a subtle animation
+            card.style.animation = 'none';
+            setTimeout(() => {
+                card.style.animation = '';
+            }, 10);
+        }
+
+        // Click event for option cards
+        optionCards.forEach(card => {
+            card.addEventListener('click', () => selectOption(card));
+
+            // Keyboard navigation
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectOption(card);
+                }
+            });
+        });
+
+        // Keyboard shortcuts (1, 2, 3)
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '3') {
+                const index = parseInt(e.key) - 1;
+                selectOption(optionCards[index]);
+            }
+
+            // Arrow key navigation
+            const currentIndex = Array.from(optionCards).findIndex(card =>
+                document.activeElement === card
+            );
+
+            if (currentIndex !== -1) {
+                if (e.key === 'ArrowRight' && currentIndex < optionCards.length - 1) {
+                    e.preventDefault();
+                    optionCards[currentIndex + 1].focus();
+                }
+                if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                    e.preventDefault();
+                    optionCards[currentIndex - 1].focus();
+                }
+            }
+        });
+
+        // Create button click
+        createBtn.addEventListener('click', () => {
+            if (selectedFormat) {
+                console.log(`Creating ${selectedFormat} post...`);
+                alert(`Creating ${selectedFormat} post! 🎉\n\nThis would redirect to the ${selectedFormat} creation page.`);
+                // In real implementation, this would navigate to the appropriate creation flow
+            }
+        });
+
+        // Cancel button click
+        cancelBtn.addEventListener('click', () => {
+            console.log('Cancelled');
+            alert('Modal closed');
+            // In real implementation, this would close the modal
+        });
+
+        // Close button click
+        closeBtn.addEventListener('click', () => {
+            console.log('Closed via X button');
+            alert('Modal closed');
+            // In real implementation, this would close the modal
+        });
+
+        // Optional: Auto-focus first option on load
+        setTimeout(() => {
+            optionCards[0].focus();
+        }, 300);
+    </script>
+</body>
+</html>
