@@ -14,13 +14,16 @@
 **/
 
 var express = require('express');
+var path = require('path');
 
-var PORT = 80;
+var PORT = process.env.PORT || 3000;
 
 var app = express();
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.get('/', function (req, res) {
-  res.send('Welcome to IBM Cloud DevOps with Docker, Kubernetes and Helm Charts. Lets go use the Continuous Delivery Service');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT)
-console.log(' Application Running on port' + PORT);
+app.listen(PORT);
+console.log('Application running on port ' + PORT);
